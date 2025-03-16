@@ -15,6 +15,12 @@ export const Info: TInfo = {
       route: true,
     },
     {
+      name: "Projects",
+      url: "/projects",
+      icon: "FaTools",
+      route: true,
+    },
+    {
       name: "GitHub",
       url: "https://github.com/YUVRAJg37",
       icon: "FaGithub",
