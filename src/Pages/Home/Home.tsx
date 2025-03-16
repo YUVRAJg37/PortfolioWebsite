@@ -2,7 +2,7 @@ import Bio from "../../Components/Bio";
 
 function Home() {
   return (
-    <div className="bg-black min-h-screen w-full">
+    <div className="bg-black min-h-screen w-full pt-20">
       <div className="text-center">
         <h2
           className="text-5xl sm:text-6xl md:text-7xl text-white font-bold 
