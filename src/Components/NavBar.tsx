@@ -14,7 +14,7 @@ function NavBar() {
   };
 
   return (
-    <nav>
+    <nav className="bg-black">
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
         <button
           onClick={() => navigate("./")}

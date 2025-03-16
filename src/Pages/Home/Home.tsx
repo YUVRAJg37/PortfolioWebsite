@@ -1,12 +1,8 @@
 import Bio from "../../Components/Bio";
-import NavBar from "../../Components/NavBar";
 
 function Home() {
   return (
     <div className="bg-black min-h-screen w-full">
-      <div className="mb-6">
-        <NavBar />
-      </div>
       <div className="text-center">
         <h2
           className="text-5xl sm:text-6xl md:text-7xl text-white font-bold 
