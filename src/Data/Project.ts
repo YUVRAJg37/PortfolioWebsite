@@ -1,6 +1,6 @@
-import { ProjectsType } from "../Types/Project";
+import { TProjectsType } from "../Types/Project";
 
-export const Project: ProjectsType[] = [
+export const Project: TProjectsType[] = [
   {
     title: "Games",
     projects: [

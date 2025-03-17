@@ -1,4 +1,4 @@
-type ProjectType = {
+export type TProjectType = {
   title: string;
   description: string;
   link: string;
@@ -6,7 +6,7 @@ type ProjectType = {
   tags: string[];
 };
 
-export type ProjectsType = {
+export type TProjectsType = {
   title: string;
-  projects: ProjectType[];
+  projects: TProjectType[];
 };

@@ -1,20 +1,13 @@
 import * as Icons from "react-icons/fa";
-
-type ProjectCardProps = {
-  title: string;
-  description: string;
-  link: string;
-  icon: string;
-  tags?: string[];
-};
+import { TProjectType } from "../Types/Project";
 
 export default function ProjectCard({
   title,
   description,
-  link,
   icon,
-  tags = [],
-}: ProjectCardProps) {
+  link,
+  tags,
+}: TProjectType) {
   const IconComponent = Icons[icon as keyof typeof Icons];
 
   return (
@@ -22,7 +15,7 @@ export default function ProjectCard({
       href={link}
       target="_blank"
       rel="noopener noreferrer"
-      className="bg-[#0c0c0c] hover:bg-[#1a1a1a] shadow-lg rounded-xl p-5 md:p-6 lg:p-8 
+      className="bg-[#0c0c0c] border border-[#414141]  hover:bg-[#1a1a1a] shadow-lg rounded-xl p-5 md:p-6 lg:p-8 
                  flex flex-col justify-between text-left hover:shadow-xl 
                  transition-shadow duration-300 w-full max-w-md cursor-pointer 
                  h-64"
