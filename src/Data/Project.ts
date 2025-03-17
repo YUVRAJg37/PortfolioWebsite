@@ -76,9 +76,9 @@ export const Project: TProjectsType[] = [
         tags: ["React", "Node", "Express", "MongoDB"],
       },
       {
-        title: "Educaptuare",
+        title: "EducaptuARe",
         description:
-          "platform aiming to provide an immersive learning experience with the help of AR",
+          "Platform aiming to provide an immersive learning experience with the help of AR",
         link: "https://github.com/yashjoshi-dotcom/EduCaptuARe",
         icon: "FaGithub",
         tags: ["React", "Node", "Express", "MongoDB", "AR", "Unreal Engine"],
