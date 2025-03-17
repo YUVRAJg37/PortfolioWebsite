@@ -12,7 +12,6 @@ function ExperienceCard({
   companyLogo,
   companyWebsite,
 }: TExperience) {
-  console.log(companyLogo);
   return (
     <div className="bg-[#0c0c0c] shadow-md rounded-lg mb-10 mt-10 p-3 md:p-5 border border-[#414141] hover:shadow-lg transition-all duration-300 w-full sm:w-[450px] md:w-[600px] lg:w-[800px] mx-auto">
       <div className="flex items-center space-x-4 flex-wrap">

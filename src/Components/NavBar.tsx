@@ -17,7 +17,7 @@ function NavBar() {
     <nav className="bg-black">
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
         <button
-          onClick={() => navigate("./PortfolioWebsite")}
+          onClick={() => navigate("./")}
           className="text-white text-xl font-bold p-3 rounded-full bg-black hover:bg-[#1a1a1a] transition flex items-center justify-center cursor-pointer"
         >
           <Icons.FaHome size={20} />

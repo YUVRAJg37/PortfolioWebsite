@@ -10,13 +10,13 @@ export const Info: TInfo = {
   links: [
     {
       name: "Experience",
-      url: "PortfolioWebsite/experience",
+      url: "/experience",
       icon: "FaBriefcase",
       route: true,
     },
     {
       name: "Projects",
-      url: "PortfolioWebsite/projects",
+      url: "/projects",
       icon: "FaTools",
       route: true,
     },
