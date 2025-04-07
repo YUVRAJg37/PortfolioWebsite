@@ -1,6 +1,12 @@
 import Bio from "../../Components/Bio";
 
 function Home() {
+  console.log(`
+    (\\__/)
+    (•ㅅ•)っ🍪
+    /つ  ♥
+ Have a Cookie!
+ `);
   return (
     <div className="bg-black min-h-screen w-full pt-20">
       <div className="text-center">
