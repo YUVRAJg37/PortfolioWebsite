@@ -29,7 +29,7 @@ export const Project: TProjectsType[] = [
       {
         title: "Interactopia",
         description:
-          "2D escape room, allow player to interact with 2D items as if they were 3D.",
+          "Game allows player to interact with 2D items as if they were 3D.",
         link: "https://yuvi37.itch.io/interactopia",
         icon: "FaGithub",
         tags: ["Unity", "C#", "Pixel Art"],
@@ -78,10 +78,10 @@ export const Project: TProjectsType[] = [
       {
         title: "EducaptuARe",
         description:
-          "Platform aiming to provide an immersive learning experience with the help of AR",
+          "Platform to provide an immersive learning experience with the help of AR",
         link: "https://github.com/yashjoshi-dotcom/EduCaptuARe",
         icon: "FaGithub",
-        tags: ["React", "Node", "Express", "MongoDB", "AR", "Unreal Engine"],
+        tags: ["React", "MongoDB", "AR", "Unreal Engine"],
       },
       {
         title: "Rentsly",
@@ -94,7 +94,7 @@ export const Project: TProjectsType[] = [
       {
         title: "Skillshala",
         description:
-          "Webapp for polishing your skills in different domains by taking live classes and downloading notes.",
+          "App to learn different domains by taking live classes and notes.",
         link: "https://github.com/yashjoshi-dotcom/skillshala",
         icon: "FaGithub",
         tags: ["React", "Node", "Express", "MongoDB"],

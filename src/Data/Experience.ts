@@ -13,7 +13,7 @@ export const ExperienceData: TExperience[] = [
       "Engineered core functionalities for a military-grade VR firing range simulator using Unity, enhancing marksmanship scores by 80% and reducing friendly fire incidents during simulated exercises by 10%.",
       "Built a web-based control panel for the simulator using ReactJS, allowing real-time system adjustments, which proved operational efficiency by 30%",
     ],
-    companyLogo: "/PortfolioWebsite/images/Indieverse-Logo.png",
+    companyLogo: "./images/Indieverse-Logo.png",
     companyWebsite: "https://www.microsoft.com",
   },
   {
@@ -28,7 +28,7 @@ export const ExperienceData: TExperience[] = [
       "Engineered a scalable VR multiplayer system using AWS, which supported up to 20 concurrent players with sub-50ms latency, enhancing real-time interactions and reducing lag by 60% compared to initial prototype",
       "Enhanced gameplay for a single-player VR game, achieving a 15% improvement in user experience.",
     ],
-    companyLogo: "/PortfolioWebsite/images/Indieverse-Logo.png",
+    companyLogo: "./images/Indieverse-Logo.png",
     companyWebsite: "https://www.microsoft.com",
   },
 ];
