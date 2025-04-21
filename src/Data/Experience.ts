@@ -3,6 +3,17 @@ import { TExperience } from "../Types/Experience";
 export const ExperienceData: TExperience[] = [
   {
     designation: "Software Engineer",
+    company: "Myntra",
+    location: "Bengaluru, India",
+    startDate: "28-04-2024",
+    endDate: "present",
+    duration: "0 Months",
+    description: ["Learning from the cool team at Myntra"],
+    companyLogo: "./images/myntra-logo.png",
+    companyWebsite: "https://www.myntra.com/",
+  },
+  {
+    designation: "Software Engineer",
     company: "Indieverse",
     location: "Bengaluru, India",
     startDate: "01-04-2024",
@@ -14,7 +25,7 @@ export const ExperienceData: TExperience[] = [
       "Built a web-based control panel for the simulator using ReactJS, allowing real-time system adjustments, which proved operational efficiency by 30%",
     ],
     companyLogo: "./images/Indieverse-Logo.png",
-    companyWebsite: "https://www.microsoft.com",
+    companyWebsite: "https://www.indieverse.studio/",
   },
   {
     designation: "Software Engineer Intern",
@@ -29,6 +40,6 @@ export const ExperienceData: TExperience[] = [
       "Enhanced gameplay for a single-player VR game, achieving a 15% improvement in user experience.",
     ],
     companyLogo: "./images/Indieverse-Logo.png",
-    companyWebsite: "https://www.microsoft.com",
+    companyWebsite: "https://www.indieverse.studio/",
   },
 ];
