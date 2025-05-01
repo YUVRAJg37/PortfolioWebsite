@@ -17,8 +17,8 @@ export const ExperienceData: TExperience[] = [
     company: "Indieverse",
     location: "Bengaluru, India",
     startDate: "01-04-2024",
-    endDate: "present",
-    duration: "1 year",
+    endDate: "21-04-2025",
+    duration: "1 year 1 month",
     description: [
       "Integrated WebXR into an existing React Three website, enhancing user experience and increasing engagement by enabling immersive 3D and AR/VR interactions",
       "Engineered core functionalities for a military-grade VR firing range simulator using Unity, enhancing marksmanship scores by 80% and reducing friendly fire incidents during simulated exercises by 10%.",
