@@ -1,14 +1,536 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Yuvi</title>
-    <base href="." />
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="./src/main.tsx"></script>
-  </body>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Yuvi</title>
+<meta name="description" content="Yuvi builds software and games. Software engineer at Myntra, Bengaluru.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='2' y='2' width='28' height='24' rx='5' fill='%232a2118'/%3E%3Crect x='6' y='6' width='20' height='15' rx='2' fill='%23120902'/%3E%3Cpath d='M9 10l4 3-4 3' fill='none' stroke='%23ffb347' stroke-width='2' stroke-linecap='square'/%3E%3Crect x='15' y='15' width='7' height='2' fill='%23ffb347'/%3E%3Crect x='10' y='27' width='12' height='3' rx='1' fill='%232a2118'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=VT323&display=swap">
+<style>
+/* Layout: a path-traced room on top, then one engineer's notebook page ruled on a grid. */
+:root{--bg:#120c06;--fg:#ffc978;--muted:#b08a55;--accent:#ff9d2e;--panel:#090604;
+  --display:"VT323",ui-monospace,monospace;--body:"IBM Plex Mono",ui-monospace,monospace;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{background:var(--bg);color:var(--fg);font:400 .92rem/1.55 var(--body)}
+a{color:inherit;text-underline-offset:.2em}
+a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+canvas:focus-visible{outline:1px solid var(--muted);outline-offset:-1px}
+.hero{position:relative;height:clamp(460px,84vh,880px);overflow:hidden;background:var(--panel)}
+.hero canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:pan-y;cursor:grab;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
+.tag{background:var(--bg);padding:.15em .5em;font-size:.8rem;line-height:1.5}
+.bar,.hint{position:absolute;z-index:2;left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(safe-area-inset-right,0px));display:flex;justify-content:space-between;gap:6px;flex-wrap:wrap;pointer-events:none}
+.bar{top:12px}.hint{bottom:12px}
+.bar>*,.bar a{pointer-events:auto}
+.bar nav{display:flex;gap:4px}
+#hud{font-variant-numeric:tabular-nums;color:var(--muted)}
+main{background-image:linear-gradient(color-mix(in srgb,var(--fg) 7%,transparent) 1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb,var(--fg) 7%,transparent) 1px,transparent 1px);background-size:24px 24px}
+.wrap{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:56px;max-width:900px;margin:auto;display:grid;gap:40px}
+h1,h2,h3{font-family:var(--display);font-weight:400;margin:0;text-wrap:balance}
+h1{font-size:3.4rem;line-height:.95}
+h2{font-size:1.5rem;line-height:1.1}
+h2::before{content:"## ";color:var(--muted)}
+h3{font-size:1.36rem;line-height:1.15}
+.lede{margin:.6em 0 0;max-width:34em;font-size:1rem}
+.bio p{max-width:62ch;margin:.8em 0 0}
+.list{list-style:none;margin:16px 0 0;padding:0;display:grid}
+.row{display:grid;grid-template-columns:11rem minmax(0,1fr);gap:2px 20px;padding:10px 0;border-top:1px dashed color-mix(in srgb,var(--fg) 45%,transparent)}
+.row>div:last-child{grid-column:2}
+.when{white-space:nowrap;color:var(--muted);font-size:.84rem;padding-top:.2em;font-variant-numeric:tabular-nums}
+.row p{margin:0;max-width:62ch}
+.row small{display:block;color:var(--muted);font-size:.8rem;margin-top:.25em}
+.row small::before{content:"stack: "}
+.row ul{margin:.2em 0 0;padding-left:1.1em;max-width:62ch}
+.src{display:inline-block;font-size:.8rem;margin-top:.25em}
+.contact{display:flex;flex-wrap:wrap;gap:8px 22px;margin-top:14px}
+@media (max-width:720px){.row{grid-template-columns:minmax(0,1fr)}.row>div:last-child{grid-column:1}#hud{display:none}
+  .hero{height:min(78svh,640px);min-height:420px}.bar .tag{padding:.45em .7em}.src{padding:.4em 0}.contact a{padding:.3em 0}.wrap{padding-block:40px}}
+</style>
+</head>
+<body>
+<main id="page">
+  <div class="hero" id="hero">
+    <canvas id="room" tabindex="0" aria-label="A ray-traced room with a working terminal. Click the screen and type help. Everything in it is also in the page below."></canvas>
+    <div class="bar"><a class="tag" href="#page">yuvi.dev</a><nav><a class="tag" href="#work">work</a><a class="tag" href="#projects">projects</a><a class="tag" href="#contact">contact</a></nav></div>
+    <div class="hint"><span class="tag" id="hint">Click the screen to use it. Drag the room to look around.</span><span class="tag" id="hud"></span></div>
+  </div>
+  <div class="wrap">
+    <header>
+      <h1>Yuvi</h1>
+      <p class="lede">Trying to become something in this world. Software engineer at Myntra, Bengaluru.</p>
+      <div class="bio" id="bio">
+        <p>I build software and games, both for fun and for a living. I started with C++ in 2017, just for learning. Game engines came next, then 3D graphics, JavaScript and Three.js, and C# for desktop apps.</p>
+        <p>C++, C# and TypeScript are my main languages. I can get by in most others, except PHP.</p>
+      </div>
+    </header>
+
+    <section id="work">
+      <h2>Work</h2>
+      <ol class="list">
+        <li class="row"><div class="when">Apr 2025 – now</div><h3>Myntra</h3><div><p>Software Engineer. On the warehouse (WMS) team since April, on the product page team before that.</p>
+          <ul><li>Enhancements to the Matrix video player on iOS</li><li>Product page enhancements</li><li>USB printing to replace QZ</li><li>Revamps and new flows for warehouse operators</li><li>Phantom, a new app for dark stores</li></ul></div></li>
+        <li class="row"><div class="when">Dec 2023 – Apr 2025</div><h3>Indieverse</h3><div><p>Software Engineer, after starting as an intern.</p>
+          <ul><li>Added WebXR to a React Three website</li><li>Core systems for a military VR firing range simulator in Unity: marksmanship scores up 80%, friendly fire down 10%</li><li>React control panel for adjusting the simulator in real time</li><li>Level of detail system for a Three.js site, loading 35% faster</li><li>VR multiplayer on AWS: 20 concurrent players under 50 ms</li></ul></div></li>
+      </ol>
+    </section>
+
+    <section id="projects">
+      <h2>Projects</h2>
+      <ul class="list">
+        <li class="row"><div class="when">2026</div><h3><a href="https://seabattle.yuvi.dev/">Sea Battle</a></h3><div><p>A turn-based 1v1 naval game you can play online or against a bot. Each of the five ships has an ability, like an airstrike, radar or torpedo, and using one replaces your shot for that turn. Two browsers connect directly over WebRTC, with a small Node server only introducing them. Both players commit to their fleet before play, and every report is replayed at the end so cheating gets flagged. The bot keeps a heat map of where the remaining ships could be and sinks a fleet in about 21 turns; random shooting takes about 96. The ships, water effects and sound are all generated in code.</p><small>TypeScript, Three.js, WebRTC, Web Audio, Node</small><a class="src" href="https://github.com/YUVRAJg37/sea-battle">source</a></div></li>
+        <li class="row"><div class="when">2023</div><h3><a href="https://three-js-spring-arm-component.vercel.app/">Spring Arm</a></h3><div><p>A third-person camera for Three.js that works like a spring arm in a game engine. It raycasts between the target and the camera, pulls in when something blocks the view, and eases back out when the path clears, so the camera never clips through the scene.</p><small>JavaScript, Three.js</small><a class="src" href="https://github.com/YUVRAJg37/Three_JS_Spring_Arm_Component">source</a></div></li>
+        <li class="row"><div class="when">2023</div><h3><a href="https://github.com/YUVRAJg37/RayTracing">Ray Tracing</a></h3><div><p>A CPU ray tracer with a live editor. Rays bounce up to five times, each material's roughness scatters its reflections, and frames accumulate so the image cleans up over time. Rendering runs in parallel, and you can add spheres and change their materials while it draws.</p><small>C++, GLM, Dear ImGui, Walnut</small></div></li>
+        <li class="row"><div class="when">2023</div><h3><a href="https://github.com/YUVRAJg37/Rasterization">Pixel Art</a></h3><div><p>A small pixel painting tool. You paint on a grid with the mouse, choose colours from a picker, and clear the canvas with one key. The grid and its drawing are written by hand on top of SFML.</p><small>C++, SFML, Dear ImGui</small></div></li>
+        <li class="row"><div class="when">2023</div><h3><a href="https://github.com/YUVRAJg37/SpaceInvaders">Space Invaders</a></h3><div><p>An Asteroids-style shooter written from scratch. You fly a ship with thrust, rotation and drag, and shoot obstacles for score. Collisions use the separating axis theorem so rotated sprites collide accurately, and an in-game panel tunes ship speed, rotation and drag while you play.</p><small>C++, SFML, Dear ImGui</small></div></li>
+        <li class="row"><div class="when">2022</div><h3><a href="https://github.com/YUVRAJg37/MultiplayerPlugin">Multiplayer Plugin</a></h3><div><p>An Unreal Engine plugin for online sessions. It wraps the Online Subsystem, with Steam as the backend, so a game can create, find, join, start and destroy sessions. It includes a menu you can set up from Blueprints with a player count and match type.</p><small>Unreal Engine, C++, Steam</small></div></li>
+        <li class="row"><div class="when">itch</div><h3><a href="https://marrex.itch.io/bit-raid">Bit Raid</a></h3><div><p>A 2D platformer where you play a hacker breaking into a system, playable in the browser. I was a programmer on a team of six.</p><small>Unity, C#, pixel art</small></div></li>
+        <li class="row"><div class="when">itch</div><h3><a href="https://yuvi37.itch.io/interactopia">Interactopia</a></h3><div><p>A prototype for a 2D escape room where 2D objects behave as if they were three-dimensional.</p><small>Unity, C#, pixel art</small></div></li>
+      </ul>
+    </section>
+
+    <section id="contact">
+      <h2>Contact</h2>
+      <div class="contact">
+        <a href="mailto:yuvi.dev37@gmail.com">yuvi.dev37@gmail.com</a>
+        <a href="https://github.com/YUVRAJg37">GitHub</a>
+        <a href="https://www.linkedin.com/in/yuvraj-gautam-b1347b220/">LinkedIn</a>
+        <a href="https://x.com/yuvrajg37">X</a>
+        <a href="https://www.instagram.com/yuvraj_g37/">Instagram</a>
+      </div>
+    </section>
+  </div>
+</main>
+
+<script>
+const $=id=>document.getElementById(id), canvas=$('room'), hud=$('hud'), hint=$('hint');
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches,coarse=matchMedia('(pointer:coarse)').matches;
+const SC={x:0,y:2.35,z:-.19,hx:1.5,hy:1.15}; // screen rectangle in world units; shared with the shaders
+
+/* ---------- terminal: drawn to a 2D canvas, shown on the CRT ---------- */
+const term=(()=>{
+  const W=1024,H=768,FS=coarse?72:50,LH=coarse?64:44,MX=coarse?34:42,MY=30,TEX=coarse?1:1.5,ROWS=Math.floor((H-MY*2)/LH)-2; // the last two rows are the prompt and the menu
+  const c=document.createElement('canvas');c.width=W*TEX;c.height=H*TEX;const x=c.getContext('2d');x.scale(TEX,TEX); // extra pixels keep text sharp when the camera moves in
+  const FONT=`${FS}px "VT323",ui-monospace,monospace`,MENU=[['about','about'],['projects','ls'],['work','work'],['contact','contact']];
+  let COLS=46,lines=[],top=0,input='',busy=false,dirty=true,sel=-1,menuHover=null,boxes=[];
+  const wrap=(s,n=COLS)=>{const o=[];let l='';for(const w of s.split(' ')){if((l+' '+w).trim().length>n){o.push(l);l=w}else l=(l+' '+w).trim()}if(l)o.push(l);return o};
+  const say=(t,a={})=>lines.push({t,...a});
+  const fit=(t,n)=>t.length>n?t.slice(0,n-3)+'...':t;
+  const para=(s,indent='')=>wrap(s,COLS-indent.length).forEach(l=>say(indent+l));
+  const text=(e,s)=>e.querySelector(s)?.textContent.trim()||'';
+  const projects=[...document.querySelectorAll('#projects .row')].map(r=>({name:text(r,'h3'),slug:text(r,'h3').toLowerCase().replace(/\s+/g,'-'),when:text(r,'.when'),desc:text(r,'p'),stack:text(r,'small'),href:r.querySelector('a').href,src:r.querySelector('.src')?.href}));
+  const jobs=[...document.querySelectorAll('#work .row')].map(r=>({who:text(r,'h3'),when:text(r,'.when'),role:text(r,'p'),items:[...r.querySelectorAll('li')].map(l=>l.textContent.trim())}));
+  const links=[...document.querySelectorAll('#contact a')].map(a=>({name:a.textContent.trim(),href:a.href}));
+  const list=()=>projects.forEach((p,i)=>say(`${String(i+1).padStart(2)}  ${p.slug.padEnd(COLS-10)}${p.when}`,{cmd:'open '+p.slug}));
+  const cmds={
+    help(){para(coarse?'tap a line:':'click a line, use the arrow keys and enter, or type one of these:');[['about','who is this'],['ls','list projects'],...(coarse?[]:[['open','open a project by name or number']]),['work','where i worked'],['contact','reach me']].forEach(([c,d])=>say(`  ${c.padEnd(9)}${d}`,c==='open'?{}:{cmd:c}));say('');para(coarse?'tap outside the screen to step back':'esc steps back from the screen')},
+    about(){document.querySelectorAll('#bio p').forEach((p,i)=>{if(i)say('');para(p.textContent.trim())})},
+    whoami(){say('yuvi',{bright:1});para('trying to become something in this world.');say('');list()},
+    ls(){list()},
+    open(a){const p=projects[+a-1]||projects.find(p=>p.slug===a||p.slug.startsWith(a||'\0'));if(!p){say(`open: no project called ${a||'(nothing)'}`);say('< all projects',{cmd:'ls'});return}
+      say(`${p.name}  ${p.when}`,{bright:1});say('');para(p.desc);say('');para('stack: '+p.stack);say('');say(fit('> '+p.href.replace('https://','').replace(/\/$/,''),COLS),{href:p.href});if(p.src)say('> source',{href:p.src});say('< all projects',{cmd:'ls'})},
+    work(){jobs.forEach((j,i)=>{if(i)say('');say(`${j.who}  ${j.when}`,{bright:1});para(j.role);j.items.forEach(t=>wrap(t,COLS-2).forEach((l,k)=>say((k?'  ':'- ')+l)))})},
+    contact(){links.forEach(l=>say(l.href.startsWith('mailto:')?`${'Email'.padEnd(11)}${l.name}`:`${l.name.padEnd(11)}${fit(l.href.replace(/https:\/\/(www\.)?/,'').replace(/\/$/,''),COLS-11)}`,{href:l.href}))},
+    clear(){},
+    php(){say('command not found. on purpose.')},
+    poweroff(){api.power?.()},
+  };
+  const ALIAS={projects:'ls',home:'whoami',menu:'help',cat:'open',cd:'open'};
+  const links2=()=>lines.flatMap((l,i)=>l.cmd||l.href?[i]:[]);
+  const maxTop=()=>Math.max(0,lines.length-ROWS);
+  const run=raw=>{
+    const s=raw.trim();if(!s)return;
+    lines=[];top=0;sel=-1;
+    let[c,...a]=s.toLowerCase().split(/\s+/);c=ALIAS[c]||c;
+    if(s.toLowerCase()==='clear'){dirty=true;api.changed=true;return}
+    say('$ '+s,{prompt:1});
+    if(/^\d+$/.test(c)||projects.some(p=>p.slug===c)){a=[c];c='open'}
+    if(Object.hasOwn(cmds,c))cmds[c](a.join(' '));else{say(`${s}: command not found.`);say('try help',{cmd:'help'})}
+    dirty=true;api.changed=true;
+  };
+  const act=l=>{if(l.href)window.open(l.href,'_blank','noopener');else if(l.cmd)run(l.cmd)};
+  const scroll=n=>{const t=Math.max(0,Math.min(maxTop(),top+n));if(t===top)return false;top=t;dirty=true;api.changed=true;return true};
+  const typeIn=(s,done)=>{
+    if(reduce){run(s);return done?.()}
+    busy=true;input='';let i=0;
+    const t=()=>{if(i<s.length){input+=s[i++];dirty=true;setTimeout(t,55+Math.random()*50)}else setTimeout(()=>{input='';busy=false;run(s);done?.()},170)};t();
+  };
+  const draw=now=>{
+    x.fillStyle='#120902';x.fillRect(0,0,W,H);
+    x.font=FONT;x.textBaseline='top';
+    lines.slice(top,top+ROWS).forEach((l,k)=>{
+      const live=l.cmd||l.href,y=MY+k*LH;
+      if(sel===top+k&&live){x.fillStyle='#7a4a12';x.fillRect(MX-10,y-1,W-MX*2+20,LH);x.fillStyle='#ffe9bd'}
+      else x.fillStyle=l.prompt?'#94601f':l.bright?'#ffe9bd':live?'#ffc56b':'#dc9a45';
+      x.fillText(l.t,MX,y);
+    });
+    const py=H-MY-2*LH,my=H-MY-LH,p='$ '+input;
+    x.fillStyle='#ffc56b';x.fillText(p,MX,py);
+    if(Math.floor(now/530)%2===0||busy)x.fillRect(MX+x.measureText(p).width+2,py+FS*.12,FS*.32,FS*.64);
+    x.fillStyle='#2e1806';x.fillRect(0,my-2,W,LH+MY+2);
+    boxes=[];let bx=MX;
+    const item=(label,m,right)=>{const w=x.measureText(label).width;if(right)bx=W-MX-w;
+      if(menuHover===m){x.fillStyle='#ffc56b';x.fillRect(bx-10,my-2,w+20,LH+2);x.fillStyle='#120902'}else x.fillStyle='#ffc56b';
+      x.fillText(label,bx,my);boxes.push({a:bx-12,b:bx+w+12,m});bx+=w+(coarse?24:34)};
+    MENU.forEach(([l,m])=>item(l,m));
+    if(maxTop())item(coarse?(top<maxTop()?' v ':' ^ '):top<maxTop()?'more v':'top ^','\0more',true);
+  };
+  const api={canvas:c,W,H,changed:false,
+    frame(now){const blink=coarse&&document.activeElement!==canvas?0:Math.floor(now/530); // no cursor uploads on phones until the terminal is in use
+     if(blink!==api._b){api._b=blink;dirty=true}if(dirty){draw(now);dirty=false;return true}return false},
+    boot(){x.font=FONT;COLS=Math.floor((W-MX*2)/x.measureText('M').width);lines=[];input='';top=0;sel=-1;dirty=true;clearTimeout(api._t);if(!busy)api._t=setTimeout(()=>typeIn('whoami'),reduce?0:500)},
+    key(e){if(busy)return false;
+      if(e.key==='Enter'){if(input){const s=input;input='';run(s)}else if(lines[sel])act(lines[sel]);return true}
+      if(e.key==='Backspace'){input=input.slice(0,-1);dirty=true;return true}
+      if(e.key==='Tab'){if(!input)return false;const words=[...Object.keys(cmds),...projects.map(p=>p.slug)],last=input.split(' ').pop().toLowerCase(),m=words.filter(w=>w.startsWith(last));if(m.length===1){input=input.slice(0,input.length-last.length)+m[0];dirty=true}return true}
+      if(e.key==='ArrowDown'||e.key==='ArrowUp'){const L=links2(),d=e.key==='ArrowDown'?1:-1;
+        if(!L.length){scroll(d);return true}
+        const k=L.indexOf(sel);sel=k<0?(d>0?L[0]:L[L.length-1]):L[(k+d+L.length)%L.length];
+        if(sel<top)top=sel;if(sel>=top+ROWS)top=sel-ROWS+1;dirty=true;return true}
+      if(e.key==='PageDown'||e.key==='PageUp'){scroll((e.key==='PageDown'?1:-1)*(ROWS-1));return true}
+      if(e.key.length===1&&!e.metaKey&&!e.ctrlKey&&input.length<COLS-3){input+=e.key;dirty=true;return true}
+      return false},
+    at(u,v){const X=u*W,Y=v*H;
+      if(Y>=H-MY-LH-2){const b=boxes.find(b=>X>=b.a&&X<=b.b);return b?{m:b.m}:null}
+      const r=top+Math.floor((Y-MY)/LH);return r>=top&&r<top+ROWS&&lines[r]&&(lines[r].cmd||lines[r].href)?{i:r}:null},
+    hover(t){const i=t&&'i'in t?t.i:-1,m=t?.m||null;if(i!==sel||m!==menuHover){sel=i;menuHover=m;dirty=true}},
+    click(t){if(busy||!t)return;if(t.m==='\0more')scroll(top<maxTop()?ROWS-1:-top);else if(t.m)run(t.m);else act(lines[t.i])},
+    scroll,
+  };
+  return api;
+})();
+
+/* ---------- renderer ---------- */
+const VS=`#version 300 es
+void main(){vec2 p=vec2((gl_VertexID<<1)&2,gl_VertexID&2);gl_Position=vec4(p*2.-1.,0.,1.);}`;
+
+const TRACE=`#version 300 es
+precision highp float;precision highp sampler2D;
+uniform vec2 uRes;uniform int uSeed;uniform float uAlpha,uFocal,uFocus,uAper,uPower;uniform sampler2D uPrev,uScr;uniform vec3 uCam,uU,uV,uW;
+out vec4 o;
+const vec2 SC=vec2(${SC.x.toFixed(2)},${SC.y.toFixed(2)}),SH=vec2(${SC.hx.toFixed(2)},${SC.hy.toFixed(2)});
+const float SZ=${SC.z.toFixed(2)};
+const vec3 BMIN=vec3(-5.,-.01,-3.5),BMAX=vec3(5.,4.3,4.3);
+const vec3 GLOW=vec3(1.,.5,.13)*12.;
+const vec3 MOONC=vec3(.32,.5,1.)*4.2;
+const vec3 AMB=vec3(.03,.036,.05);
+uint st;
+float rnd(){st=st*747796405u+2891336453u;uint w=((st>>((st>>28u)+4u))^st)*277803737u;return float((w>>22u)^w)/4294967296.;}
+float h21(vec2 p){p=fract(p*vec2(127.1,311.7));p+=dot(p,p+34.5);return fract(p.x*p.y);}
+float vn(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(h21(i),h21(i+vec2(1,0)),f.x),mix(h21(i+vec2(0,1)),h21(i+vec2(1,1)),f.x),f.y);}
+float box(vec3 p,vec3 b){vec3 q=abs(p)-b;return length(max(q,0.))+min(max(q.x,max(q.y,q.z)),0.);}
+float rb(vec3 p,vec3 b,float r){return box(p,b-r)-r;}
+float smin(float a,float b,float k){float h=max(k-abs(a-b),0.)/k;return min(a,b)-h*h*k*.25;}
+float smax(float a,float b,float k){return -smin(-a,-b,k);}
+float cyl(vec3 p,float r,float h,float e){vec2 d=vec2(length(p.xz)-r+e,abs(p.y)-h+e);return min(max(d.x,d.y),0.)+length(max(d,0.))-e;}
+float cap(vec3 p,vec3 a,vec3 b,float r){vec3 pa=p-a,ba=b-a;return length(pa-ba*clamp(dot(pa,ba)/dot(ba,ba),0.,1.))-r;}
+vec2 un(vec2 a,vec2 b){return a.x<b.x?a:b;}
+mat2 rot(float a){float c=cos(a),s=sin(a);return mat2(c,-s,s,c);}
+// materials: 1 case and screen, 3 knob, 4 led, 5 key, 6 keyboard base, 7 mug, 8 coffee, 9 paper, 10 pencil, 11 disk
+vec2 map(vec3 p){
+  vec2 r=vec2(1e3,0.);
+  float bb=box(p-vec3(0,2.1,-1.45),vec3(2.2,2.15,1.95));
+  if(bb>.2)r=vec2(bb,1.);else{
+    float d=rb(p-vec3(0,2.35,-.6),vec3(2.,1.7,.6),.17);
+    d=smin(d,rb(p-vec3(0,2.3,-2.),vec3(1.55,1.3,1.),.32),.34);
+    d=smin(d,rb(p-vec3(0,.42,-1.1),vec3(.95,.32,.9),.2),.12);
+    d=smin(d,cyl(p-vec3(0,.07,-1.1),1.4,.07,.05),.08);
+    d=smax(d,-rb(p-vec3(0,2.35,-.02),vec3(1.62,1.27,.17),.15),.05);
+    float g=max(abs(fract(p.z*3.6)-.5)/3.6-.022,3.52-p.y);g=max(g,max(abs(p.x)-1.,abs(p.z+2.)-.7));d=max(d,-g);
+    r=vec2(d,1.);
+    float kx=clamp(round((p.x-1.32)/.25),-1.,1.);
+    r=un(r,vec2(rb(p-vec3(1.32+kx*.25,.87,.03),vec3(.07,.07,.06),.05),3.));
+    r=un(r,vec2(length(p-vec3(-1.72,.87,.012))-.028,4.));
+  }
+  float kb=box(p-vec3(0,.3,3.1),vec3(2.4,.3,1.));
+  if(kb>.2)r=un(r,vec2(kb,6.));else{
+    r=un(r,vec2(rb(p-vec3(0,.16,3.1),vec3(2.3,.16,.92),.08),6.));
+    vec2 id=clamp(round((p.xz-vec2(0,3.1))/.29),vec2(-7,-2),vec2(7,2));
+    vec3 k=p-vec3(id.x*.29,.37,3.1+id.y*.29);
+    float d=rb(k,vec3(.125,.055,.125),.04);
+    if(id.y>1.5&&abs(id.x)<3.5)d=rb(p-vec3(0,.37,3.68),vec3(1.0,.055,.125),.04);
+    r=un(r,vec2(d,5.));
+  }
+  vec3 q=p-vec3(3.35,0,1.9);
+  float mb=box(q-vec3(.2,.5,0),vec3(.85,.55,.6));
+  if(mb>.2)r=un(r,vec2(mb,7.));else{
+    float d=cyl(q-vec3(0,.48,0),.43,.48,.03);
+    d=smax(d,-cyl(q-vec3(0,.62,0),.37,.48,.03),.02);
+    vec3 t=q-vec3(.47,.47,0);d=smin(d,max(length(vec2(length(t.xy)-.21,t.z))-.05,-q.x+.38),.03);
+    r=un(r,vec2(d,7.));
+    r=un(r,vec2(max(length(q.xz)-.375,abs(q.y-.68)-.06),8.));
+  }
+  vec3 n=p-vec3(-3.45,0,2.05);n.xz=rot(.28)*n.xz;
+  float nb=box(n-vec3(0,.12,0),vec3(.95,.14,1.25));
+  if(nb>.2)r=un(r,vec2(nb,9.));else{
+    r=un(r,vec2(rb(n-vec3(0,.08,0),vec3(.82,.08,1.12),.015),9.));
+    r=un(r,vec2(cap(n,vec3(-.1,.2,-.75),vec3(.32,.2,.72),.035),10.));
+  }
+  vec3 f=p-vec3(3.25,0,-.55);float fb=box(f-vec3(0,.06,0),vec3(.75,.07,.75));
+  if(fb>.2)r=un(r,vec2(fb,11.));else{
+    vec3 a=f-vec3(0,.025,0);a.xz=rot(-.2)*a.xz;r=un(r,vec2(rb(a,vec3(.47,.024,.49),.012),11.));
+    vec3 b=f-vec3(.05,.075,.03);b.xz=rot(.22)*b.xz;r=un(r,vec2(rb(b,vec3(.47,.024,.49),.012),12.));
+  }
+  return r;
+}
+float march(vec3 ro,vec3 rd,float tMax,int steps,out float m){
+  vec3 inv=1./rd,a=(BMIN-ro)*inv,b=(BMAX-ro)*inv,n=min(a,b),f=max(a,b);
+  float t=max(max(n.x,max(n.y,n.z)),0.),e=min(min(f.x,min(f.y,f.z)),tMax);
+  if(t>=e)return -1.;
+  for(int i=0;i<steps;i++){
+    vec2 h=map(ro+rd*t);
+    if(h.x<.0012+.0003*t){m=h.y;return t;}
+    t+=h.x;if(t>e)return -1.;
+  }
+  return -1.;
+}
+bool occluded(vec3 ro,vec3 rd,float tMax){float m;return march(ro,rd,tMax,${coarse?24:40},m)>0.;}
+vec3 normal(vec3 p){const vec2 e=vec2(1,-1)*.0015;return normalize(e.xyy*map(p+e.xyy).x+e.yyx*map(p+e.yyx).x+e.yxy*map(p+e.yxy).x+e.xxx*map(p+e.xxx).x);}
+vec3 sphere(){float a=6.2831853*rnd(),z=2.*rnd()-1.,r=sqrt(max(0.,1.-z*z));return vec3(r*cos(a),r*sin(a),z);}
+// moonlight is a directional beam clipped by a window frame, so panes land on the wall
+const vec3 MOON=vec3(-.6897,.5172,.5057);
+bool pane(vec3 q,vec3 d){
+  float t=(-15.-q.x)/d.x;vec3 h=q+d*t;
+  if(h.y<5.5||h.y>13.5||h.z<-2.5||h.z>6.5)return false;
+  return abs(fract((h.y-5.5)/2.667)-.5)<.45&&abs(fract((h.z+2.5)/3.)-.5)<.455;
+}
+vec2 scrUV(vec3 q){vec2 s=(q.xy-SC)/SH;return s*(1.+.045*dot(s,s));}
+vec3 scrLow(vec2 s,float lod){return max(s.x*s.x,s.y*s.y)>1.?vec3(0):pow(textureLod(uScr,s*.5+.5,lod).rgb,vec3(2.2));}
+void main(){
+  st=uint(gl_FragCoord.x)*1973u+uint(gl_FragCoord.y)*9277u+uint(uSeed)*26699u|1u;
+  vec2 p=(gl_FragCoord.xy-.5+vec2(rnd(),rnd())-.5*uRes)/uRes.y;
+  vec3 dc=normalize(p.x*uU+p.y*uV-uFocal*uW);
+  float la=6.2831853*rnd(),lr=sqrt(rnd())*uAper;
+  vec3 ro=uCam+(cos(la)*uU+sin(la)*uV)*lr,fp=uCam+dc*(uFocus/dot(dc,-uW)),rd=normalize(fp-ro),tp=vec3(1),L=vec3(0);
+  float mask=0.;bool spec=true;
+  for(int b=0;b<${coarse?3:4};b++){
+    float tD=rd.y<0.?-ro.y/rd.y:1e5,tW=rd.z<0.?(-7.-ro.z)/rd.z:1e5,far=min(tD,tW),m=0.,t=march(ro,rd,far,b==0?${coarse?70:110}:${coarse?36:60},m);
+    vec3 n;
+    if(t<0.){
+      if(far>=1e5){L+=tp*AMB;break;}
+      t=far;m=tD<tW?20.:21.;n=tD<tW?vec3(0,1,0):vec3(0,0,1);
+    }
+    vec3 q=ro+rd*t;
+    if(m>0.&&m<20.)n=normal(q);
+    vec3 alb=vec3(.5);float rough=.5,F0=.04;
+    if(m<1.5){alb=vec3(.46,.42,.34);rough=.42;}
+    bool isScreen=m<1.5&&q.z<-.165&&abs(q.x)<1.63&&abs(q.y-SC.y)<1.28;
+    if(isScreen){
+      vec2 s=scrUV(q);
+      if(b==0)mask=1.;
+      if(b>0&&spec)L+=tp*uPower*(scrLow(s,4.)*5.+GLOW*.07*step(max(abs(s.x),abs(s.y)),1.)); // the sharp screen is drawn per frame in the display pass, so new text never smears
+      vec3 g=normalize(vec3(s*.1,1));
+      float c=max(-dot(rd,g),0.),F=.05+.95*pow(1.-c,5.);
+      if(rnd()>F*1.6)break;
+      rd=reflect(rd,g);ro=q+g*.003;spec=true;continue;
+    }
+    if(m>2.5&&m<3.5){alb=vec3(.05);rough=.3;}
+    else if(m>3.5&&m<4.5){L+=tp*vec3(1.,.08,.03)*14.*uPower;break;}
+    else if(m>4.5&&m<5.5){
+      vec2 id=clamp(round((q.xz-vec2(0,3.1))/.29),vec2(-7,-2),vec2(7,2));
+      float dark=step(5.5,abs(id.x))+step(1.5,abs(id.y))*step(3.5,abs(id.x));
+      alb=mix(vec3(.52,.48,.4),vec3(.2,.19,.17),clamp(dark,0.,1.));rough=.38;
+    }
+    else if(m>5.5&&m<6.5){alb=vec3(.3,.28,.23);rough=.5;}
+    else if(m>6.5&&m<7.5){alb=vec3(.58,.54,.46);rough=.14;F0=.05;}
+    else if(m>7.5&&m<8.5){alb=vec3(.02,.008,.003);rough=.03;}
+    else if(m>8.5&&m<9.5){
+      vec3 c=q-vec3(-3.45,0,2.05);c.xz=rot(.28)*c.xz;
+      alb=vec3(.68,.63,.52);rough=.8;
+      if(q.y>.15){alb*=1.-.45*step(.46,abs(fract(c.z*6.)-.5));if(c.x<-.66)alb=vec3(.1,.07,.06);}
+    }
+    else if(m>9.5&&m<10.5){alb=vec3(.7,.42,.08);rough=.35;}
+    else if(m>10.5&&m<12.5){
+      vec3 c=q-vec3(3.25,0,-.55);c.xz=rot(m<11.5?-.2:.22)*c.xz;
+      alb=vec3(.03,.035,.05);rough=.3;
+      if(q.y>(m<11.5?.04:.09)&&c.z>-.05&&abs(c.x)<.33)alb=m<11.5?vec3(.6,.56,.44):vec3(.6,.3,.1);
+    }
+    else if(m>19.5&&m<20.5){
+      float w=vn(q.xz*vec2(.7,7.)+vn(q.xz*.7)*3.),w2=vn(q.xz*vec2(2.5,28.));
+      alb=mix(vec3(.05,.027,.014),vec3(.11,.06,.03),w*.7+w2*.3);rough=.3+.14*w2;F0=.05;
+      n=normalize(n+vec3(0,0,(w2-.5)*.012));
+    }
+    else if(m>20.5){alb=vec3(.3,.31,.32)*(.8+.3*vn(q.xy*vec2(1.5,2.5)));rough=1.;}
+    float c=max(-dot(rd,n),0.),F=F0+(1.-F0)*pow(1.-c,5.);
+    if(rnd()<F*(1.-rough*.75)){
+      rd=normalize(reflect(rd,n)+sphere()*rough*rough*.9);
+      if(dot(rd,n)<0.)rd=reflect(rd,n);
+      ro=q+n*.003;spec=true;continue;
+    }
+    vec3 o2=q+n*.003;
+    // screen as an area light
+    vec3 sp=vec3(SC.x+(2.*rnd()-1.)*SH.x,SC.y+(2.*rnd()-1.)*SH.y,.02),l=sp-q;
+    float d2=dot(l,l),dl=sqrt(d2);l/=dl;
+    float cq=dot(n,l),cs=-l.z;
+    if(uPower>0.&&cq>0.&&cs>0.&&!occluded(o2,l,dl-.02))L+=tp*alb*uPower*GLOW*cq*cs*(4.*SH.x*SH.y)/(max(d2,.25)*6.2831853);
+    // moon through the window
+    vec3 sd=normalize(MOON+(vec3(rnd(),rnd(),rnd())-.5)*.022);
+    float nl=dot(n,sd);
+    if(nl>0.&&pane(q,sd)&&!occluded(o2,sd,40.))L+=tp*alb*MOONC*nl/3.14159;
+    L+=tp*alb*AMB*.6;
+    rd=normalize(n+sphere());ro=o2;tp*=alb;spec=false;
+  }
+  L=min(L,vec3(8));if(any(isnan(L)))L=vec3(0);
+  vec4 prev=texelFetch(uPrev,ivec2(gl_FragCoord.xy),0);
+  o=mix(prev,vec4(L,mask),uAlpha);
+}`;
+
+const SHOW=`#version 300 es
+precision highp float;precision highp sampler2D;
+uniform sampler2D uTex,uScr;uniform vec2 uView;uniform vec3 uCam,uU,uV,uW;uniform float uFocal,uTime;uniform vec4 uCrt;
+out vec4 o;
+const vec2 SC=vec2(${SC.x.toFixed(2)},${SC.y.toFixed(2)}),SH=vec2(${SC.hx.toFixed(2)},${SC.hy.toFixed(2)});
+const float SZ=${SC.z.toFixed(2)};
+float h(vec2 p){p=fract(p*vec2(127.1,311.7));p+=dot(p,p+34.5);return fract(p.x*p.y);}
+void main(){
+  vec2 f=gl_FragCoord.xy,uv=f/uView;
+  vec4 a=textureLod(uTex,uv,0.);vec3 c=a.rgb;
+  if(a.a>.002){
+    vec2 p=(f-.5*uView)/uView.y;
+    vec3 d=normalize(p.x*uU+p.y*uV-uFocal*uW),q=uCam+d*((SZ-uCam.z)/d.z);
+    vec2 s=(q.xy-SC)/SH;s*=1.+.045*dot(s,s);s/=max(uCrt.xy,vec2(1e-3));
+    if(uCrt.x>0.&&max(abs(s.x),abs(s.y))<1.){
+      vec2 u=s*.5+.5;
+      vec3 t=pow(texture(uScr,u,-.4).rgb,vec3(2.2)),halo=pow(textureLod(uScr,u,3.5).rgb,vec3(2.2));
+      float sa=.3*clamp(1.5-fwidth(u.y)*768.,0.,1.),scan=1.-sa+sa*sin(u.y*768.*3.14159),roll=1.+.035*sin(u.y*7.-uTime*.9);
+      vec2 e=smoothstep(vec2(1.),vec2(.965),abs(s));
+      vec3 crisp=(t*scan+halo*.3)*roll*e.x*e.y;
+      c+=a.a*mix(crisp,vec3(1.,.72,.42),uCrt.z)*5.*(1.+uCrt.z);
+    }
+  }
+  vec3 b=textureLod(uTex,uv,2.).rgb*.28+textureLod(uTex,uv,4.).rgb*.26+textureLod(uTex,uv,5.5).rgb*.3;
+  c+=b*.22+uCrt.w*(1.-a.a)*vec3(1.,.45,.12)*(textureLod(uTex,uv,3.).a*.05+textureLod(uTex,uv,5.).a*.1);
+  vec2 v=uv-.5;c*=1.-.9*dot(v,v);
+  c*=1.05;c=clamp(c*(2.51*c+.03)/(c*(2.43*c+.59)+.14),0.,1.);
+  c=pow(c,vec3(.4545));
+  c+=(h(f*.01+fract(uTime)*7.)-.5)*.018;
+  o=vec4(c,1);
+}`;
+
+(function room(){
+  const gl=canvas.getContext('webgl2',{antialias:false,alpha:false,preserveDrawingBuffer:true,powerPreference:'high-performance'});
+  const noGL=msg=>{hint.textContent=msg;canvas.style.display='none';$('hero').style.height='auto';$('hero').style.minHeight='96px'};
+  if(!gl||!(gl.getExtension('EXT_color_buffer_float')||gl.getExtension('EXT_color_buffer_half_float')))return noGL('This browser cannot run the ray tracer. Everything is on the page below.');
+  const par=gl.getExtension('KHR_parallel_shader_compile');
+  const prog=fs=>{const p=gl.createProgram();for(const[t,s]of[[gl.VERTEX_SHADER,VS],[gl.FRAGMENT_SHADER,fs]]){const h=gl.createShader(t);gl.shaderSource(h,s);gl.compileShader(h);gl.attachShader(p,h)}gl.linkProgram(p);return p};
+  const pT=prog(TRACE),pS=prog(SHOW);
+  const uni=(p,c={})=>n=>c[n]??=gl.getUniformLocation(p,n);
+  const uT=uni(pT),uS=uni(pS);
+
+  const scr=gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D,scr);
+  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR_MIPMAP_LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
+  const upload=()=>{gl.bindTexture(gl.TEXTURE_2D,scr);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,term.canvas);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,false);gl.generateMipmap(gl.TEXTURE_2D)};
+
+  const s={tex:[],fb:[],w:0,h:0,scale:coarse?.6:1,n:0,seed:1,reset:true,moving:false,yaw:.34,pitch:.11,dist:13,q:1,qT:1,zoomDist:7,z:0,zT:0,last:null,moved:0,avg:16,cnt:0};
+  const TGT=[.05,1.72,.6],F=2.25,MAX=coarse?350:1500;
+  const size=()=>{
+    const r=canvas.getBoundingClientRect(),d=Math.min(devicePixelRatio||1,coarse?1.5:2),vw=Math.max(2,Math.round(r.width*d)),vh=Math.max(2,Math.round(r.height*d));
+    if(canvas.width!==vw||canvas.height!==vh){canvas.width=vw;canvas.height=vh}
+    const asp=r.width/r.height;
+    if(!s.framed){s.framed=1;if(asp<1)s.yaw=.18}
+    s.dist=Math.max(13.2,(asp<1?2.35:5.3)*F/(asp/2));s.zoomDist=Math.max(1.46*2*F,1.74*2*F/asp);
+    const k=Math.min(1,1100/r.width)*s.scale,w=Math.max(160,Math.round(r.width*k)),h=Math.max(90,Math.round(r.height*k));
+    if(w===s.w&&h===s.h)return;
+    s.w=w;s.h=h;
+    for(let i=0;i<2;i++){gl.deleteTexture(s.tex[i]);gl.deleteFramebuffer(s.fb[i]);
+      const t=gl.createTexture();gl.bindTexture(gl.TEXTURE_2D,t);gl.texStorage2D(gl.TEXTURE_2D,Math.floor(Math.log2(Math.max(w,h)))+1,gl.RGBA16F,w,h);
+      gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR_MIPMAP_LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
+      const f=gl.createFramebuffer();gl.bindFramebuffer(gl.FRAMEBUFFER,f);gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,t,0);
+      s.tex[i]=t;s.fb[i]=f}
+    s.reset=true;
+  };
+  const norm=v=>{const l=Math.hypot(...v);return v.map(x=>x/l)},cross=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
+  const basis=()=>{const z=s.z*s.z*(3-2*s.z),mix=(a,b)=>a+(b-a)*z,yaw=mix(s.yaw,0),pitch=mix(s.pitch,0),dist=mix(s.dist,s.zoomDist),T=[mix(TGT[0],SC.x),mix(TGT[1],SC.y),mix(TGT[2],SC.z)],cp=Math.cos(pitch),cam=[T[0]+dist*cp*Math.sin(yaw),T[1]+dist*Math.sin(pitch),T[2]+dist*cp*Math.cos(yaw)],W=norm([cam[0]-T[0],cam[1]-T[1],cam[2]-T[2]]),U=norm(cross([0,1,0],W));return{cam,U,V:cross(W,U),W}};
+
+  // pointer to terminal row, using the same curved mapping as the shaders
+  const rowAt=e=>{
+    const r=canvas.getBoundingClientRect(),px=(e.clientX-r.left-r.width/2)/r.height,py=-(e.clientY-r.top-r.height/2)/r.height,{cam,U,V,W}=basis();
+    const d=[0,1,2].map(i=>px*U[i]+py*V[i]-F*W[i]),t=(SC.z-cam[2])/d[2],sx=(cam[0]+d[0]*t-SC.x)/SC.hx,sy=(cam[1]+d[1]*t-SC.y)/SC.hy,k=1+.045*(sx*sx+sy*sy),u=sx*k,v=sy*k;
+    if(Math.abs(u)>1||Math.abs(v)>1)return{on:false,t:null};
+    return{on:true,t:term.at(u*.5+.5,.5-v*.5)};
+  };
+  // where a pointer's ray crosses a plane of the scene: axis 2 is the monitor's front, axis 1 the top of the keyboard
+  const onPlane=(e,axis,at)=>{const r=canvas.getBoundingClientRect(),px=(e.clientX-r.left-r.width/2)/r.height,py=-(e.clientY-r.top-r.height/2)/r.height,{cam,U,V,W}=basis(),d=[0,1,2].map(i=>px*U[i]+py*V[i]-F*W[i]),t=(at-cam[axis])/d[axis];return[0,1,2].map(i=>cam[i]+d[i]*t)};
+  const slop=e=>e.pointerType==='touch'?12:5;
+  const hitKnobs=e=>{const p=onPlane(e,2,.03);return Math.abs(p[0]-1.32)<(coarse?.6:.42)&&Math.abs(p[1]-.87)<(coarse?.3:.17)};
+  const hitKeys=e=>{const p=onPlane(e,1,.4);return Math.abs(p[0])<2.3&&Math.abs(p[2]-3.1)<.92};
+  const HINT_ON=coarse?'Tap the screen to use it. The knobs switch it off.':'Click the screen to use it. The knobs under it switch it off. Drag the room to look around.',HINT_OFF=coarse?'Off. Tap the knobs to switch it on.':'The screen is off. Click the knobs to switch it back on.';
+  const zoomIn=()=>{if(!s.qT)return;s.zT=1;hint.textContent=coarse?'Tap a line. Tap outside the screen to step back.':'Type, click, or use the arrow keys and Enter. Esc steps back.'};
+  const use=()=>{canvas.focus({preventScroll:true});zoomIn()};
+  const power=()=>{s.qT=s.qT?0:1;if(s.qT){term.boot();hint.textContent=HINT_ON;if(document.activeElement===canvas)zoomIn()}else{canvas.blur();s.zT=0;hint.textContent=HINT_OFF}};
+  term.power=power;
+  canvas.addEventListener('pointerdown',e=>{s.last=[e.clientX,e.clientY];s.moved=0;if(e.pointerType!=='touch')try{canvas.setPointerCapture(e.pointerId)}catch{}canvas.style.cursor='grabbing'});
+  canvas.addEventListener('pointermove',e=>{
+    if(!s.last){const h=s.qT?rowAt(e):{on:false,t:null},k=hitKnobs(e);term.hover(h.t);canvas.style.cursor=k||h.t?'pointer':h.on||(s.qT&&hitKeys(e))?'text':s.zT?'zoom-out':'grab';return}
+    const dx=e.clientX-s.last[0],dy=e.clientY-s.last[1];s.moved+=Math.abs(dx)+Math.abs(dy);s.last=[e.clientX,e.clientY];
+    if(s.moved<slop(e)||s.zT)return;
+    s.yaw=Math.max(-.72,Math.min(.72,s.yaw-dx*.0035));
+    if(e.pointerType!=='touch')s.pitch=Math.max(.02,Math.min(.42,s.pitch+dy*.0028));
+    s.moving=true;
+  });
+  const end=e=>{if(s.last&&s.moved<slop(e)&&e.type==='pointerup'){if(hitKnobs(e))power();else if(s.qT){const h=rowAt(e);if(h.on){use();term.click(h.t)}else if(hitKeys(e))use();else if(s.zT)canvas.blur()}}s.last=null;canvas.style.cursor=s.zT?'text':'grab'};
+  canvas.addEventListener('pointerup',end);canvas.addEventListener('pointercancel',end);
+  canvas.addEventListener('keydown',e=>{if(e.key==='Escape'){canvas.blur();return}if(!s.qT){if(e.key==='Enter')power();return}if(term.key(e))e.preventDefault()});
+  hint.textContent=HINT_ON;
+  canvas.addEventListener('mousedown',e=>e.preventDefault()); // a press may be the start of a drag, so only a finished click on the screen takes focus
+  canvas.addEventListener('focus',zoomIn);
+  canvas.addEventListener('blur',()=>{s.zT=0;hint.textContent=s.qT?HINT_ON:HINT_OFF});
+  canvas.addEventListener('wheel',e=>{if(s.zT&&term.scroll(Math.sign(e.deltaY)*2))e.preventDefault()},{passive:false});
+
+  let scrolled=0;addEventListener('scroll',()=>scrolled=performance.now(),{passive:true});
+  let vis=true;new IntersectionObserver(e=>vis=e[0].isIntersecting).observe(canvas);
+  let last=performance.now(),booted=false;
+  const tick=now=>{
+    requestAnimationFrame(tick);
+    const raw=now-last;last=now;
+    if(!vis||document.hidden||(coarse&&performance.now()-scrolled<180))return; // scrolling comes first on phones
+    if(term.frame(now))upload();
+    if(term.changed){term.changed=false;if(s.n>60)s.n=60} // let new text reach the reflections without restarting the room
+    size();
+    if(s.z!==s.zT){s.z=reduce?s.zT:s.z+Math.sign(s.zT-s.z)*Math.min(Math.abs(s.zT-s.z),Math.min(raw,50)/650);s.moving=true}
+    if(s.q!==s.qT){const d=Math.min(raw,50)/(s.qT?750:420);s.q=reduce?s.qT:Math.abs(s.qT-s.q)<=d?s.qT:s.q+Math.sign(s.qT-s.q)*d;s.moving=true;if(s.q===s.qT)s.reset=true}
+    const lit=Math.max(0,(s.q-.35)/.65),glow=lit*lit*(3-2*lit);
+    if(raw<250&&s.seed>12){s.avg+=(raw-s.avg)*.08;if(++s.cnt>(coarse?20:45)&&s.avg>38&&s.scale>.32){s.scale*=.8;s.cnt=0;s.avg=20}if(coarse&&s.scale<=.32&&s.avg>90&&s.n>40)s.n=MAX} // shortcut: resolution only steps down, add step-up if fast GPUs start too low
+    const{cam,U,V,W}=basis();
+    if(s.n<MAX||s.moving||s.reset){
+      gl.useProgram(pT);gl.viewport(0,0,s.w,s.h);gl.bindFramebuffer(gl.FRAMEBUFFER,s.fb[1]);
+      gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,s.tex[0]);gl.uniform1i(uT('uPrev'),0);
+      gl.activeTexture(gl.TEXTURE1);gl.bindTexture(gl.TEXTURE_2D,scr);gl.uniform1i(uT('uScr'),1);
+      let a;if(s.reset){a=1;s.n=1}else if(s.moving){a=.3;s.n=3}else{a=1/(s.n+1);s.n++}
+      gl.uniform1f(uT('uAlpha'),a);gl.uniform1i(uT('uSeed'),s.seed++);gl.uniform2f(uT('uRes'),s.w,s.h);
+      gl.uniform3fv(uT('uCam'),cam);gl.uniform3fv(uT('uU'),U);gl.uniform3fv(uT('uV'),V);gl.uniform3fv(uT('uW'),W);
+      gl.uniform1f(uT('uFocal'),F);gl.uniform1f(uT('uAper'),.055);gl.uniform1f(uT('uPower'),glow);
+      gl.uniform1f(uT('uFocus'),(cam[0]-SC.x)*W[0]+(cam[1]-SC.y)*W[1]+(cam[2]-SC.z)*W[2]);
+      gl.drawArrays(gl.TRIANGLES,0,3);
+      s.tex.reverse();s.fb.reverse();s.moving=false;s.reset=false;
+      gl.bindFramebuffer(gl.FRAMEBUFFER,null);
+      gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,s.tex[0]);gl.generateMipmap(gl.TEXTURE_2D);
+    }
+    gl.useProgram(pS);gl.bindFramebuffer(gl.FRAMEBUFFER,null);gl.viewport(0,0,canvas.width,canvas.height);
+    gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,s.tex[0]);gl.uniform1i(uS('uTex'),0);
+    gl.activeTexture(gl.TEXTURE1);gl.bindTexture(gl.TEXTURE_2D,scr);gl.uniform1i(uS('uScr'),1);
+    gl.uniform2f(uS('uView'),canvas.width,canvas.height);gl.uniform3fv(uS('uCam'),cam);gl.uniform3fv(uS('uU'),U);gl.uniform3fv(uS('uV'),V);gl.uniform3fv(uS('uW'),W);
+    gl.uniform1f(uS('uFocal'),F);gl.uniform1f(uS('uTime'),reduce?0:now/1000);gl.uniform4f(uS('uCrt'),Math.min(1,s.q/.35),Math.max(glow,.006),s.q>0&&s.q<1?1-glow:0,glow);
+    gl.drawArrays(gl.TRIANGLES,0,3);
+    if((s.seed&15)===0)hud.textContent=`path traced in this browser · ${s.n} samples · ${s.w}×${s.h} · no 3D library`;
+  };
+  const begin=()=>{
+    for(const[p,n]of[[pT,'room'],[pS,'display']])if(!gl.getProgramParameter(p,gl.LINK_STATUS)){console.error(n,gl.getProgramInfoLog(p));return noGL('The ray tracer could not start on this GPU. Everything is on the page below.')}
+    hud.textContent='';
+    const go=()=>{term.frame(performance.now());upload();term.boot();last=performance.now();requestAnimationFrame(tick)};
+    (document.fonts?.load?document.fonts.load('50px "VT323"').catch(()=>{}):Promise.resolve()).then(go);
+  };
+  // slow drivers can take many seconds to compile this shader, so never block the page on it
+  hud.textContent='compiling shader…';
+  if(par){const poll=()=>gl.getProgramParameter(pT,par.COMPLETION_STATUS_KHR)&&gl.getProgramParameter(pS,par.COMPLETION_STATUS_KHR)?begin():setTimeout(poll,60);poll()}
+  else setTimeout(begin,30);
+})();
+</script>
+</body>
 </html>

@@ -1,0 +1,16 @@
+yuvi.dev {
+	encode gzip
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "no-referrer"
+		-Server
+	}
+	root * /var/www/portfolio
+	header Cache-Control "no-cache"
+	file_server
+}
+
+www.yuvi.dev {
+	redir https://yuvi.dev{uri} permanent
+}
